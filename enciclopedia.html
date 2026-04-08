@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📖 Enciclopedia · Bestias y Monstruos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fire:#ff4d00;--ember:#ff8c00;--gold:#ffd700;
+  --dark:#050305;--deep:#0d0509;--blood:#8b0000;
+  --teal:#00c8a0;--purple:#9b00ff;--card-bg:rgba(20,5,10,0.88);
+  --pure:#4488ff;--corrupt:#cc00ff;--origen:#ffaa00;--monster:#ff2222;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:#e8d5b0;font-family:'Cinzel',serif;overflow-x:hidden;min-height:100vh;cursor:crosshair;}
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+/* NAV */
+.top-nav{display:flex;align-items:center;justify-content:space-between;padding:0.7rem 2rem;
+  background:rgba(8,2,6,0.97);border-bottom:1px solid rgba(255,140,0,0.12);position:relative;z-index:10;flex-wrap:wrap;gap:0.5rem;}
+.nav-logo{font-family:'Cinzel Decorative',serif;font-size:0.8rem;color:var(--gold);text-decoration:none;filter:drop-shadow(0 0 8px rgba(255,200,0,0.3));}
+.nav-links{display:flex;gap:0.5rem;flex-wrap:wrap;}
+.nav-link{font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,140,0,0.55);text-decoration:none;padding:0.35rem 0.85rem;border:1px solid rgba(255,140,0,0.12);clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);transition:all 0.2s;}
+.nav-link:hover,.nav-link.active{color:var(--gold);border-color:rgba(255,140,0,0.45);background:rgba(255,100,0,0.08);}
+
+/* HERO */
+.hero{position:relative;padding:3rem 2rem 2rem;text-align:center;z-index:1;
+  background:radial-gradient(ellipse 80% 50% at 50% 80%,rgba(180,40,0,0.18),transparent 70%),
+             radial-gradient(ellipse 60% 40% at 50% 0%,rgba(80,0,120,0.2),transparent 60%);}
+.eyebrow{font-size:0.62rem;letter-spacing:0.5em;color:var(--ember);text-transform:uppercase;margin-bottom:0.8rem;}
+h1{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5rem,5vw,3.5rem);font-weight:900;
+  background:linear-gradient(160deg,#ffe680 0%,#ff8c00 35%,#ff2200 65%,#9b00ff 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 28px rgba(255,100,0,0.4));}
+.hero-sub{margin-top:0.6rem;font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(0.82rem,2vw,1.05rem);color:#d4b88a;}
+.divider{width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--fire),var(--gold),var(--fire),transparent);position:relative;z-index:1;}
+
+/* STATS BAR */
+.stats-bar{display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;padding:0.8rem 2rem;
+  background:rgba(10,3,8,0.8);border-bottom:1px solid rgba(255,140,0,0.08);position:relative;z-index:2;font-size:0.65rem;letter-spacing:0.18em;}
+.stat-item{display:flex;align-items:center;gap:0.5rem;color:#a08060;}
+.stat-val{font-size:0.9rem;font-weight:700;}
+.stat-val.pure{color:var(--pure);}
+.stat-val.corrupt{color:var(--corrupt);}
+.stat-val.origen{color:var(--origen);}
+.stat-val.monster{color:var(--monster);}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem;position:relative;z-index:1;}
+
+/* SEARCH & FILTERS */
+.controls{display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem;}
+.search-wrap{position:relative;}
+.search-input{width:100%;background:rgba(5,3,5,0.85);border:1px solid rgba(255,140,0,0.22);color:#e8d5b0;
+  font-family:'Cinzel',serif;font-size:0.82rem;padding:0.85rem 1.2rem 0.85rem 3rem;outline:none;
+  letter-spacing:0.05em;transition:border-color 0.25s,box-shadow 0.25s;}
+.search-input::placeholder{color:rgba(255,140,0,0.22);}
+.search-input:focus{border-color:var(--ember);box-shadow:0 0 20px rgba(255,120,0,0.12);}
+.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:rgba(255,140,0,0.35);font-size:1rem;pointer-events:none;}
+.filter-row{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:0.58rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,140,0,0.4);}
+.filter-btn{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;
+  padding:0.4rem 1rem;background:rgba(5,3,5,0.8);border:1px solid rgba(255,140,0,0.2);
+  color:rgba(255,140,0,0.55);cursor:pointer;transition:all 0.2s;
+  clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);}
+.filter-btn:hover{border-color:var(--ember);color:var(--gold);}
+.filter-btn.active{color:#fff;border-color:var(--ember);}
+.filter-btn[data-cat="all"].active{background:linear-gradient(135deg,rgba(255,69,0,0.3),rgba(255,140,0,0.3));}
+.filter-btn[data-cat="pura"].active{background:rgba(68,136,255,0.2);border-color:var(--pure);color:var(--pure);}
+.filter-btn[data-cat="corrupta"].active{background:rgba(204,0,255,0.15);border-color:var(--corrupt);color:var(--corrupt);}
+.filter-btn[data-cat="origen"].active{background:rgba(255,170,0,0.15);border-color:var(--origen);color:var(--origen);}
+.filter-btn[data-cat="jefe"].active{background:rgba(255,34,34,0.2);border-color:var(--monster);color:var(--monster);}
+.filter-btn[data-cat="npc"].active{background:rgba(255,34,34,0.12);border-color:#ff6666;color:#ff9999;}
+.results-count{font-size:0.62rem;letter-spacing:0.2em;color:rgba(255,140,0,0.4);margin-left:auto;}
+
+/* GRID */
+.beast-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
+.beast-card{background:var(--card-bg);border:1px solid rgba(255,140,0,0.15);padding:1.4rem 1.2rem;
+  cursor:pointer;transition:all 0.22s;position:relative;overflow:hidden;animation:fadeUp 0.4s ease both;}
+.beast-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.beast-card:hover{transform:translateY(-3px);}
+.beast-card.pura{border-color:rgba(68,136,255,0.25);}
+.beast-card.pura::before{background:radial-gradient(ellipse at 50% 100%,rgba(68,136,255,0.08),transparent 70%);}
+.beast-card.corrupta{border-color:rgba(204,0,255,0.25);}
+.beast-card.corrupta::before{background:radial-gradient(ellipse at 50% 100%,rgba(204,0,255,0.08),transparent 70%);}
+.beast-card.origen{border-color:rgba(255,170,0,0.35);}
+.beast-card.origen::before{background:radial-gradient(ellipse at 50% 100%,rgba(255,170,0,0.1),transparent 70%);}
+.beast-card.jefe{border-color:rgba(255,34,34,0.3);}
+.beast-card.jefe::before{background:radial-gradient(ellipse at 50% 100%,rgba(255,34,34,0.08),transparent 70%);}
+.beast-card.npc{border-color:rgba(255,80,80,0.2);}
+.beast-card.npc::before{background:radial-gradient(ellipse at 50% 100%,rgba(255,80,80,0.05),transparent 70%);}
+.beast-card:hover::before{opacity:1;}
+.beast-card:hover.pura{box-shadow:0 8px 30px rgba(68,136,255,0.15);}
+.beast-card:hover.corrupta{box-shadow:0 8px 30px rgba(204,0,255,0.15);}
+.beast-card:hover.origen{box-shadow:0 8px 30px rgba(255,170,0,0.2);}
+.beast-card:hover.jefe,.beast-card:hover.npc{box-shadow:0 8px 30px rgba(255,34,34,0.2);}
+.card-icon{font-size:2.8rem;text-align:center;margin-bottom:0.7rem;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));}
+.card-name{font-family:'Cinzel Decorative',serif;font-size:0.72rem;color:var(--gold);text-align:center;margin-bottom:0.3rem;line-height:1.3;}
+.card-badge{display:flex;justify-content:center;margin-bottom:0.6rem;}
+.badge{display:inline-block;font-size:0.52rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.2rem 0.7rem;border:1px solid;}
+.badge.pura{border-color:rgba(68,136,255,0.5);color:rgba(100,160,255,0.9);}
+.badge.corrupta{border-color:rgba(204,0,255,0.5);color:rgba(220,100,255,0.9);}
+.badge.origen{border-color:rgba(255,170,0,0.5);color:rgba(255,200,80,0.9);}
+.badge.jefe{border-color:rgba(255,34,34,0.5);color:rgba(255,100,100,0.9);}
+.badge.npc{border-color:rgba(255,80,80,0.4);color:rgba(255,140,140,0.8);}
+.card-desc{font-family:'IM Fell English',serif;font-style:italic;font-size:0.8rem;color:#8a7060;
+  text-align:center;line-height:1.4;}
+.card-status{position:absolute;top:0.6rem;right:0.6rem;font-size:0.65rem;}
+.card-hidden{position:absolute;inset:0;background:rgba(5,3,5,0.75);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;backdrop-filter:blur(2px);}
+.card-hidden .hide-icon{font-size:2rem;opacity:0.5;}
+.card-hidden .hide-txt{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,140,0,0.4);}
+
+/* NO RESULTS */
+.no-results{text-align:center;padding:4rem 2rem;color:rgba(255,140,0,0.3);font-family:'IM Fell English',serif;font-style:italic;font-size:1.1rem;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:#0a0307;border:1px solid rgba(255,140,0,0.25);max-width:560px;width:100%;
+  max-height:92vh;overflow-y:auto;position:relative;}
+.modal::-webkit-scrollbar{width:3px;}
+.modal::-webkit-scrollbar-thumb{background:rgba(255,140,0,0.2);}
+.modal-header{padding:2rem 2rem 1.5rem;position:relative;text-align:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(255,100,0,0.08),transparent 70%);}
+.modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;
+  color:rgba(255,140,0,0.4);font-size:1.1rem;cursor:pointer;transition:color 0.2s;padding:0.2rem 0.5rem;}
+.modal-close:hover{color:var(--gold);}
+.modal-icon{font-size:4rem;margin-bottom:0.8rem;filter:drop-shadow(0 0 20px rgba(255,150,0,0.3));}
+.modal-title{font-family:'Cinzel Decorative',serif;font-size:1.1rem;color:var(--gold);margin-bottom:0.4rem;
+  filter:drop-shadow(0 0 12px rgba(255,200,0,0.2));}
+.modal-cat{display:inline-block;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.25rem 0.9rem;border:1px solid;margin-bottom:1rem;}
+.modal-body{padding:0 2rem 2rem;}
+.modal-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,140,0,0.2),transparent);margin:1.2rem 0;}
+.info-row{display:flex;align-items:flex-start;gap:0.8rem;padding:0.6rem 0;border-bottom:1px solid rgba(255,140,0,0.07);}
+.info-key{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,140,0,0.4);min-width:90px;padding-top:0.15rem;}
+.info-val{font-family:'IM Fell English',serif;font-style:italic;color:#d4b88a;font-size:0.9rem;line-height:1.5;flex:1;}
+.info-val.lore{color:#c0a880;font-size:0.95rem;line-height:1.6;}
+.tag-row{display:flex;gap:0.4rem;flex-wrap:wrap;}
+.tag{display:inline-block;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.2rem 0.6rem;border:1px solid rgba(255,140,0,0.2);color:rgba(255,140,0,0.55);}
+.modal-tip{margin-top:1.2rem;padding:0.8rem 1rem;border-left:2px solid var(--ember);background:rgba(255,140,0,0.04);}
+.modal-tip-label{font-size:0.55rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--ember);margin-bottom:0.3rem;}
+.modal-tip-text{font-family:'IM Fell English',serif;font-style:italic;font-size:0.85rem;color:#a08060;line-height:1.45;}
+.modal-roblox{display:inline-flex;align-items:center;gap:0.5rem;font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;padding:0.6rem 1.4rem;background:linear-gradient(135deg,#ff4500,#ff8c00);color:#fff;border:none;cursor:pointer;text-decoration:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);box-shadow:0 0 20px rgba(255,80,0,0.35);transition:all 0.22s;margin-top:1.5rem;}
+.modal-roblox:hover{box-shadow:0 0 35px rgba(255,120,0,0.5);transform:translateY(-1px);}
+
+/* SECTION HEADERS */
+.section-header{margin:2.5rem 0 1rem;display:flex;align-items:center;gap:1rem;}
+.section-title{font-family:'Cinzel Decorative',serif;font-size:0.9rem;color:var(--gold);white-space:nowrap;}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(255,140,0,0.3),transparent);}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<nav class="top-nav">
+  <a class="nav-logo" href="index.html">🔥 Dragón Primordial</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Arte IA</a>
+    <a class="nav-link" href="ajedrez.html">Ajedrez</a>
+    <a class="nav-link active" href="enciclopedia.html">Enciclopedia</a>
+    <a class="nav-link" href="https://www.roblox.com/es/games/103451711855402/BESTIAS-Y-MONSTRUOS" target="_blank">🎮 Jugar</a>
+  </div>
+</nav>
+
+<div class="divider"></div>
+<div class="hero">
+  <p class="eyebrow">Era Salvaje · Dragón Primordial</p>
+  <h1>Enciclopedia de Bestias</h1>
+  <p class="hero-sub">Toda criatura del mundo salvaje — documentada, catalogada, temida.</p>
+</div>
+<div class="divider"></div>
+
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-val pure">8</span> Bestias Puras</div>
+  <div class="stat-item"><span class="stat-val corrupt">5</span> Bestias Corruptas</div>
+  <div class="stat-item"><span class="stat-val origen">1</span> Bestia Origen</div>
+  <div class="stat-item"><span class="stat-val monster">8</span> Jefes</div>
+  <div class="stat-item"><span class="stat-val monster">8</span> NPC Hostiles</div>
+</div>
+
+<div class="main">
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="Buscar bestia o monstruo..." oninput="applyFilters()">
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Filtrar:</span>
+      <button class="filter-btn active" data-cat="all" onclick="setFilter('all',this)">Todo</button>
+      <button class="filter-btn" data-cat="pura" onclick="setFilter('pura',this)">💠 Puras</button>
+      <button class="filter-btn" data-cat="corrupta" onclick="setFilter('corrupta',this)">🩸 Corruptas</button>
+      <button class="filter-btn" data-cat="origen" onclick="setFilter('origen',this)">⚖ Origen</button>
+      <button class="filter-btn" data-cat="jefe" onclick="setFilter('jefe',this)">👑 Jefes</button>
+      <button class="filter-btn" data-cat="npc" onclick="setFilter('npc',this)">👹 NPC Hostiles</button>
+      <span class="results-count" id="resultsCount"></span>
+    </div>
+  </div>
+  <div class="beast-grid" id="beastGrid"></div>
+  <div class="no-results" id="noResults" style="display:none;">Ninguna bestia encontrada con ese nombre... ¿Será una criatura oculta? 🐉</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+const DATA = [
+  // ── BESTIAS PURAS ──
+  { id:'leon', name:'Bestia León', icon:'🦁', cat:'pura', catLabel:'💠 Pura', available:true,
+    desc:'El rey de las bestias. Fuerza bruta y liderazgo.',
+    lore:'El León reina sobre el campo de batalla con presencia aplastante. Su rugido hace temblar incluso a los jefes más temibles.',
+    style:'Ataque directo y dominio frontal',
+    tip:'Ideal para jugadores nuevos que prefieren el combate cara a cara. Usa tu presencia para intimidar antes de atacar.',
+    tags:['Ataque','Fuerza','Frontal'] },
+  { id:'dragon', name:'Bestia Dragón', icon:'🐲', cat:'pura', catLabel:'💠 Pura', available:true,
+    desc:'Señor del cielo y el fuego. Control y poder superior.',
+    lore:'El Dragón Puro no solo domina el cielo — domina la mente de sus enemigos. Su aliento de fuego puede cambiar el rumbo de cualquier batalla.',
+    style:'Control de área y poder aéreo',
+    tip:'Aprovecha la movilidad aérea para sorprender a los enemigos. El Dragón brilla en espacios abiertos.',
+    tags:['Fuego','Control','Aéreo'] },
+  { id:'serpiente', name:'Bestia Serpiente', icon:'🐍', cat:'pura', catLabel:'💠 Pura', available:true,
+    desc:'Sigilosa y letal. Velocidad y veneno.',
+    lore:'La Serpiente se desliza sin ser vista y ataca antes de que el enemigo pueda reaccionar. Su veneno es tan letal como su sigilo.',
+    style:'Sigilo y combate táctico',
+    tip:'No te enfrentes de frente. Rodea, envenena y espera. La paciencia es tu arma más poderosa.',
+    tags:['Veneno','Sigilo','Velocidad'] },
+  { id:'tortuga', name:'Bestia Tortuga', icon:'🐢', cat:'pura', catLabel:'💠 Pura', available:true,
+    desc:'Defensiva y resistente. La guerra de desgaste.',
+    lore:'Pocos pueden romper la coraza de la Tortuga. Sus enemigos se agotan intentando penetrar su defensa mientras ella espera el momento perfecto para contraatacar.',
+    style:'Tanque defensivo y desgaste',
+    tip:'Aguanta, resiste y contraataca cuando el enemigo cometa errores. Tu fortaleza es tu mayor arma.',
+    tags:['Defensa','Resistencia','Contraataque'] },
+  { id:'fenix', name:'Bestia Fénix', icon:'🐦‍🔥', cat:'pura', catLabel:'💠 Pura', available:true,
+    desc:'Renace de sus cenizas. Resiliencia y fuego sagrado.',
+    lore:'La Fénix no puede ser derrotada permanentemente. Cada caída la hace más fuerte. Sus llamas sagradas purifican incluso la corrupción más oscura.',
+    style:'Resiliencia y combate de fuego',
+    tip:'No temas morir — la Fénix convierte la derrota en poder. Úsala para desgastar a enemigos que crean haberla eliminado.',
+    tags:['Renacimiento','Fuego','Resiliente'] },
+  { id:'zorro', name:'Bestia Zorro', icon:'🦊', cat:'pura', catLabel:'💠 Pura', available:true,
+    desc:'Astuta y veloz. Movimientos imprevisibles.',
+    lore:'El Zorro no gana por fuerza bruta — gana por astucia. Sus movimientos son tan imprevisibles que incluso los veteranos caen en sus trampas.',
+    style:'Combate táctico e imprevisible',
+    tip:'Engaña, fintas y nunca ataques de la manera esperada. El Zorro recompensa la creatividad táctica.',
+    tags:['Astucia','Velocidad','Engaño'] },
+  { id:'reylagarto', name:'Bestia Rey Lagarto Tirano', icon:'🦖', cat:'pura', catLabel:'💠 Pura', available:true,
+    desc:'El terror prehistórico. Fuerza descomunal.',
+    lore:'El Rey Lagarto Tirano es la encarnación del poder prehistórico. Su mordida puede partir rocas y su pisada hace temblar la tierra.',
+    style:'Fuerza bruta y terror',
+    tip:'Usa tu tamaño e intimidación para controlar el espacio. Los enemigos que huyen de ti están cayendo en tu trampa.',
+    tags:['Fuerza','Terror','Prehistórico'] },
+  { id:'escorpion', name:'Bestia Escorpión', icon:'🦂', cat:'pura', catLabel:'💠 Pura', available:true,
+    desc:'Mortal en corta distancia. Veneno y devastación.',
+    lore:'El Escorpión combina la velocidad del depredador con el veneno del asesino. En distancias cortas, pocas bestias pueden sobrevivir su aguijón.',
+    style:'Daño en ráfaga y veneno',
+    tip:'Cierra distancias rápido y desata todo tu poder antes de que el enemigo pueda reaccionar. El Escorpión no perdona la indecisión.',
+    tags:['Veneno','Ráfaga','Cuerpo a cuerpo'] },
+
+  // ── BESTIAS CORRUPTAS ──
+  { id:'arana', name:'Bestia Araña', icon:'🕷️', cat:'corrupta', catLabel:'🩸 Corrupta', available:true,
+    desc:'Teje redes de caos. Control del campo de batalla.',
+    lore:'La Araña Corrupta no solo atrapa cuerpos — atrapa mentes. Sus redes de oscuridad cubren el campo de batalla antes de que el enemigo se dé cuenta de que ya está atrapado.',
+    style:'Control del mapa y trampas',
+    tip:'Prepara el terreno antes del combate. La Araña gana partidas antes de que el enemigo llegue a golpearla.',
+    tags:['Trampas','Control','Oscuridad'] },
+  { id:'ballena', name:'Bestia Ballena', icon:'🐳', cat:'corrupta', catLabel:'🩸 Corrupta', available:true,
+    desc:'Poder de las profundidades. Aplasta con devastación.',
+    lore:'La Ballena Corrupta trae consigo el frío absoluto de las profundidades abisales. Su presencia deforma el ambiente mismo — el agua obedece su voluntad oscura.',
+    style:'Daño masivo y presencia',
+    tip:'La Ballena es una bestia de alto impacto. Cada acción debe ser deliberada — su poder es lento pero absolutamente devastador.',
+    tags:['Agua','Devastación','Abisal'] },
+  { id:'unicornio', name:'Bestia Unicornio', icon:'🦄', cat:'corrupta', catLabel:'🩸 Corrupta', available:true,
+    desc:'Pureza corrompida. Magia destructiva oculta.',
+    lore:'Lo que fue sagrado ahora es peligroso. El Unicornio Corrupto canaliza la magia en su forma más oscura, disfrazando el poder destructivo bajo una apariencia majestuosa.',
+    style:'Magia y engaño estético',
+    tip:'Nadie espera que el Unicornio sea una amenaza. Úsalo para sorprender a rivales que subestiman su poder.',
+    tags:['Magia','Corrupción','Engaño'] },
+  { id:'quimera', name:'Bestia Quimera', icon:'🧪', cat:'corrupta', catLabel:'🩸 Corrupta', available:true,
+    desc:'Fusión de múltiples bestias. Impredecible y versátil.',
+    lore:'La Quimera es el resultado de una corrupción que fusionó varias bestias en un solo ser. Su mente fragmentada la hace imprevisible incluso para sus aliados.',
+    style:'Versatilidad y caos',
+    tip:'Adapta tu estilo en cada combate. La Quimera no tiene una forma correcta de jugarse — esa es precisamente su ventaja.',
+    tags:['Versátil','Caos','Fusión'] },
+  { id:'lobo', name:'Bestia Lobo', icon:'🐺', cat:'corrupta', catLabel:'🩸 Corrupta', available:true,
+    desc:'El depredador del grupo. Más peligroso entre muchos.',
+    lore:'El Lobo Corrupto prospera en el caos de la batalla masiva. Cuantos más enemigos haya, más peligroso se vuelve. La manada corrupta dentro de él nunca duerme.',
+    style:'Escala con enemigos múltiples',
+    tip:'Busca los combates con varios oponentes. El Lobo se vuelve exponencialmente más peligroso cuando los números están en tu contra.',
+    tags:['Manada','Escalado','Agresivo'] },
+
+  // ── ORIGEN ──
+  { id:'humano', name:'Bestia Humano', icon:'👤', cat:'origen', catLabel:'⚖ Origen', available:true,
+    desc:'El comienzo de todo. El punto de partida de cada leyenda.',
+    lore:'Toda gran bestia comenzó siendo humana. El Humano no tiene el poder bruto de las otras bestias — tiene algo más valioso: la capacidad de aprender y adaptarse a cualquier situación.',
+    style:'Aprendizaje y adaptabilidad',
+    tip:'Empieza aquí. Aprende las mecánicas básicas antes de elegir una bestia más compleja. El Humano te enseñará todo lo que necesitas.',
+    tags:['Inicio','Adaptable','Aprendizaje'] },
+
+  // ── JEFES ──
+  { id:'cangrejo', name:'Cangrejo Ermitaño', icon:'🐚', cat:'jefe', catLabel:'👑 Jefe', available:true,
+    desc:'Patrón de ataque agresivo. Alta peligrosidad.',
+    lore:'El Cangrejo Ermitaño habita una concha que en realidad es la ruina de una bestia aún más grande. Sus pinzas pueden partir el acero.',
+    style:'Enemigo · No jugable',
+    tip:'Tiene patrones de ataque agresivos. Mantén distancia y ataca cuando veas una apertura entre sus ataques consecutivos.',
+    tags:['Jefe','Agresivo','Alta dificultad'] },
+  { id:'tiburon', name:'Tiburón de Agua', icon:'🦈', cat:'jefe', catLabel:'👑 Jefe', available:true,
+    desc:'Depredador acuático. Velocidad letal.',
+    lore:'El Tiburón de Agua domina cualquier zona húmeda con velocidad sobrenatural. Sus ataques son tan rápidos que apenas se ven venir.',
+    style:'Enemigo · No jugable',
+    tip:'Cuidado en zonas de agua — el Tiburón tiene ventaja en su terreno. Intenta atraerlo fuera del agua antes de enfrentarlo.',
+    tags:['Jefe','Acuático','Velocidad'] },
+  { id:'hidra', name:'Hidra', icon:'🐍', cat:'jefe', catLabel:'👑 Jefe', available:true,
+    desc:'Múltiples fases. El jefe más temido de la era.',
+    lore:'La Hidra regenera sus cabezas en cada fase. Derrotarla requiere no solo fuerza sino coordinación y conocimiento de sus ciclos de vulnerabilidad.',
+    style:'Enemigo · Múltiples fases',
+    tip:'¡No bajes la guardia! Cada fase de la Hidra es completamente diferente. Prepárate para cambiar de estrategia varias veces en el mismo combate.',
+    tags:['Jefe','Multi-fase','Regeneración'] },
+  { id:'basilisco', name:'Basilisco', icon:'🐔', cat:'jefe', catLabel:'👑 Jefe', available:true,
+    desc:'Extremadamente peligroso sin preparación.',
+    lore:'La mirada del Basilisco puede paralizar incluso a las bestias más poderosas. No lo enfrentes sin haber aprendido a esquivar su visión mortal.',
+    style:'Enemigo · Habilidades especiales',
+    tip:'Nunca lo enfrentes sin preparación. La estrategia es key — aprende primero su patrón de movimiento antes de atacar.',
+    tags:['Jefe','Peligroso','Habilidad especial'] },
+  { id:'jabali', name:'Jabalí Mutante', icon:'🐗', cat:'jefe', catLabel:'👑 Jefe', available:true,
+    desc:'Patrón agresivo. Alta velocidad de carga.',
+    lore:'El Jabalí Mutante fue corrompido por las mismas fuerzas que crearon las Bestias Corruptas. Su rabia es imparable y sus embestidas pueden arrasar a varios a la vez.',
+    style:'Enemigo · Embestida masiva',
+    tip:'Esquiva las embestidas lateralmente — nunca de frente. Después de cada carga, tiene un momento de vulnerabilidad que debes aprovechar.',
+    tags:['Jefe','Agresivo','Carga'] },
+  { id:'plesiosaurio', name:'Plesiosaurio', icon:'🦕', cat:'jefe', catLabel:'👑 Jefe', available:true,
+    desc:'Sorprende con movilidad inesperada.',
+    lore:'El Plesiosaurio parece lento hasta que ataca. Su cuello puede alcanzar enemigos a distancias imposibles y su velocidad en el agua supera a cualquier bestia jugable.',
+    style:'Enemigo · Alcance sorpresa',
+    tip:'No te confíes por su apariencia. El Plesiosaurio es más rápido de lo que parece y su alcance de cuello puede sorprenderte a distancias inesperadas.',
+    tags:['Jefe','Alcance','Sorpresa'] },
+  { id:'jefe_hielo', name:'??? Jefe Misterioso', icon:'🧊', cat:'jefe', catLabel:'👑 Jefe', available:false,
+    desc:'Criatura de hielo. Aún por descubrir.',
+    lore:'Algo acecha en las zonas de frío extremo. Los exploradores que lo han visto no regresan para contarlo.',
+    style:'Enemigo · Desconocido',
+    tip:'Algunos dicen que habita en zonas de hielo. Explora con cuidado.',
+    tags:['Jefe','Misterio','Elemental'] },
+  { id:'jefe_planta', name:'??? Jefe Misterioso', icon:'🌳', cat:'jefe', catLabel:'👑 Jefe', available:false,
+    desc:'Criatura de madera y raíces. Aún por descubrir.',
+    lore:'Las zonas boscosas más densas guardan algo antiguo. Algo que ha crecido durante eras en la oscuridad del bosque.',
+    style:'Enemigo · Desconocido',
+    tip:'Hay indicios en zonas de vegetación densa. Nadie ha regresado para describirlo completamente.',
+    tags:['Jefe','Misterio','Naturaleza'] },
+
+  // ── NPC HOSTILES ──
+  { id:'oruga', name:'Oruga', icon:'🐛', cat:'npc', catLabel:'👹 NPC Hostil', available:true,
+    desc:'NPC hostil básico. Peligroso en grupos.',
+    lore:'La Oruga parece inofensiva sola. En grupos, su veneno acumulado puede debilitar incluso a los jugadores más experimentados.',
+    style:'Enemigo común · Veneno',
+    tip:'Elimínalas rápido antes de que se acumulen. En grupos son mucho más peligrosas de lo que parecen.',
+    tags:['NPC','Veneno','Grupo'] },
+  { id:'flormon', name:'Flor Monstruo', icon:'🌸', cat:'npc', catLabel:'👹 NPC Hostil', available:true,
+    desc:'NPC hostil de zona. Ataca desde posición fija.',
+    lore:'La Flor Monstruo espera pacientemente que las presas se acerquen. Sus pétalos ocultan espinas que inyectan un veneno paralizante.',
+    style:'Enemigo estático · Control de zona',
+    tip:'Atácala desde distancia si es posible. Acercarse sin preparación activa su defensa de espinas.',
+    tags:['NPC','Estático','Parálisis'] },
+  { id:'murcielago', name:'Murciélago de Ébano', icon:'🦇', cat:'npc', catLabel:'👹 NPC Hostil', available:true,
+    desc:'NPC aéreo. Ataca en grupos desde el aire.',
+    lore:'Los Murciélagos de Ébano son casi invisibles en la oscuridad. Sus ataques coordinados desde el aire son difíciles de esquivar.',
+    style:'Enemigo aéreo · Enjambre',
+    tip:'Mantente alerta en zonas oscuras y cuevas. Los Murciélagos son más peligrosos cuando se les ignora que cuando se les enfrenta directamente.',
+    tags:['NPC','Aéreo','Enjambre'] },
+  { id:'licantropo', name:'Licántropo Lunar', icon:'🐺', cat:'npc', catLabel:'👹 NPC Hostil', available:true,
+    desc:'Peligroso en espacios cerrados. Alta agresividad.',
+    lore:'El Licántropo Lunar se vuelve más peligroso cuanto más estrecho es el espacio. En pasillos cerrados, su velocidad de ataque aumenta drásticamente.',
+    style:'Enemigo agresivo · Espacios cerrados',
+    tip:'Evita enfrentarlo en espacios estrechos. En campo abierto es mucho más manejable.',
+    tags:['NPC','Agresivo','Espacios cerrados'] },
+  { id:'dragonabisal', name:'Dragón Abisal', icon:'🐲', cat:'npc', catLabel:'👹 NPC Hostil', available:true,
+    desc:'Peligroso en espacios cerrados. Alta amenaza.',
+    lore:'El Dragón Abisal es una versión corrompida del Dragón Puro. Habita en las zonas más oscuras y su aliento ácido puede atravesar la mayoría de defensas.',
+    style:'Enemigo de élite · Ácido',
+    tip:'Trátalo como un mini-jefe. No lo subestimes por ser un NPC — el Dragón Abisal puede eliminar jugadores descuidados en segundos.',
+    tags:['NPC','Élite','Ácido'] },
+  { id:'caballo', name:'Caballo', icon:'🐴', cat:'npc', catLabel:'👹 NPC Hostil', available:true,
+    desc:'NPC hostil de velocidad. Carga sorpresiva.',
+    lore:'Lo que parece un animal doméstico revela su naturaleza salvaje al menor signo de amenaza. La velocidad de carga del Caballo supera a la mayoría de bestias.',
+    style:'Enemigo rápido · Carga',
+    tip:'Esquiva las cargas y golpea desde los flancos. El Caballo es vulnerable inmediatamente después de una carga fallida.',
+    tags:['NPC','Velocidad','Carga'] },
+  { id:'npc_hielo', name:'??? Criatura Misteriosa', icon:'⛄', cat:'npc', catLabel:'👹 NPC Hostil', available:false,
+    desc:'Criatura elemental de hielo. Aún por descubrir.',
+    lore:'Hay rastros en la nieve. Algo camina por las zonas frías del mundo salvaje, dejando marcas que no corresponden a ninguna bestia conocida.',
+    style:'Enemigo · Desconocido',
+    tip:'El icono sugiere una criatura elemental de hielo o frío extremo.',
+    tags:['NPC','Misterio','Elemental'] },
+  { id:'npc_planta', name:'??? Criatura Misteriosa', icon:'🌿', cat:'npc', catLabel:'👹 NPC Hostil', available:false,
+    desc:'Criatura vegetal. Aún por descubrir.',
+    lore:'Las plantas más antiguas del mundo salvaje guardan secretos. Algunos exploradores juran haber visto las raíces moverse solas en la oscuridad.',
+    style:'Enemigo · Desconocido',
+    tip:'El icono sugiere una criatura de naturaleza vegetal. Explora zonas boscosas con cuidado.',
+    tags:['NPC','Misterio','Naturaleza'] },
+];
+
+let currentFilter = 'all';
+
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const filtered = DATA.filter(d => {
+    const matchCat = currentFilter === 'all' || d.cat === currentFilter;
+    const matchSearch = !q || d.name.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q) || d.tags.some(t => t.toLowerCase().includes(q));
+    return matchCat && matchSearch;
+  });
+  renderGrid(filtered);
+  document.getElementById('resultsCount').textContent = filtered.length + ' resultado' + (filtered.length !== 1 ? 's' : '');
+}
+
+function renderGrid(items) {
+  const grid = document.getElementById('beastGrid');
+  const noRes = document.getElementById('noResults');
+  if (!items.length) { grid.innerHTML=''; noRes.style.display='block'; return; }
+  noRes.style.display='none';
+  grid.innerHTML = items.map((d, i) => `
+    <div class="beast-card ${d.cat}" onclick="openModal('${d.id}')" style="animation-delay:${i*0.04}s">
+      ${d.available ? '' : '<div class="card-hidden"><div class="hide-icon">❓</div><div class="hide-txt">Por descubrir</div></div>'}
+      <div class="card-status">${d.available ? '✅' : '❓'}</div>
+      <div class="card-icon">${d.icon}</div>
+      <div class="card-name">${d.name}</div>
+      <div class="card-badge"><span class="badge ${d.cat}">${d.catLabel}</span></div>
+      <div class="card-desc">${d.desc}</div>
+    </div>`).join('');
+}
+
+function openModal(id) {
+  const d = DATA.find(x => x.id === id);
+  const catColors = { pura:'rgba(68,136,255,0.5);color:rgba(100,160,255,0.9)', corrupta:'rgba(204,0,255,0.5);color:rgba(220,100,255,0.9)', origen:'rgba(255,170,0,0.5);color:rgba(255,200,80,0.9)', jefe:'rgba(255,34,34,0.5);color:rgba(255,100,100,0.9)', npc:'rgba(255,80,80,0.4);color:rgba(255,140,140,0.8)' };
+  const cc = catColors[d.cat];
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-icon">${d.icon}</div>
+      <div class="modal-title">${d.name}</div>
+      <span class="modal-cat" style="border-color:${cc}">${d.catLabel}</span>
+    </div>
+    <div class="modal-body">
+      <div class="info-row"><div class="info-key">Lore</div><div class="info-val lore">${d.lore}</div></div>
+      <div class="info-row"><div class="info-key">Estilo</div><div class="info-val">${d.style}</div></div>
+      <div class="info-row"><div class="info-key">Pasiva</div><div class="info-val" style="color:rgba(255,140,0,0.4);font-style:italic;">Por revelar — ¡contribuye a la wiki!</div></div>
+      <div class="info-row"><div class="info-key">Estado</div><div class="info-val">${d.available ? '✅ Disponible en juego' : '❓ Aún por descubrir — explora el mundo'}</div></div>
+      <div class="info-row"><div class="info-key">Tags</div><div class="info-val"><div class="tag-row">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div></div>
+      <div class="modal-divider"></div>
+      <div class="modal-tip">
+        <div class="modal-tip-label">🔥 Consejo de la Wiki</div>
+        <div class="modal-tip-text">${d.tip}</div>
+      </div>
+      ${d.cat !== 'jefe' && d.cat !== 'npc' ? `<div style="text-align:center;"><a class="modal-roblox" href="https://www.roblox.com/es/games/103451711855402/BESTIAS-Y-MONSTRUOS" target="_blank">🎮 Jugar en Roblox</a></div>` : ''}
+    </div>`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// PARTICLES
+const canvas = document.getElementById('particles'), ctx = canvas.getContext('2d');
+let W = canvas.width = window.innerWidth, H = canvas.height = window.innerHeight;
+window.addEventListener('resize', ()=>{ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; });
+const embers = Array.from({length:65}, ()=>({
+  x:Math.random()*window.innerWidth, y:window.innerHeight+Math.random()*100,
+  size:Math.random()*2+0.4, speed:Math.random()*0.65+0.18,
+  drift:(Math.random()-0.5)*0.35, alpha:Math.random()*0.5+0.08, hue:Math.random()*60+5
+}));
+function drawEmbers(){
+  ctx.clearRect(0,0,W,H);
+  embers.forEach(e=>{
+    e.y-=e.speed; e.x+=e.drift;
+    e.alpha+=(Math.random()-0.5)*0.018;
+    e.alpha=Math.max(0.04,Math.min(0.6,e.alpha));
+    if(e.y<-10){e.y=H+10;e.x=Math.random()*W;}
+    ctx.beginPath(); ctx.arc(e.x,e.y,e.size,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${e.hue},100%,60%,${e.alpha})`; ctx.fill();
+  });
+  requestAnimationFrame(drawEmbers);
+}
+drawEmbers();
+
+// INIT
+applyFilters();
+document.getElementById('resultsCount').textContent = DATA.length + ' resultados';
+</script>
+</body>
+</html>
